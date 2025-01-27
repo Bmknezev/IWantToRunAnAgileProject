@@ -13,6 +13,15 @@ logged_in = {
     'session': [],
 }
 
+# now you can access the FID based on the IP address of someboy
+# get_FID_by_IP(request.remote_addr) # this is the fastest way to use it in any socketio function
+def get_FID_by_IP(ip):
+    loc_in_logged = logged_in['session'].index(ip)
+    return logged_in['FID'][loc_in_logged]
+
+# need more info? get the specific index you need from the logger
+def get_index_by_IP(ip):
+    return logged_in['session'].index(ip)
 
 @socketio.on('connect')
 def connect():
