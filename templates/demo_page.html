@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .settings-section {
+            padding: 10px;
+            background-color: #beebfa;
+            color: #333;
+            border-top: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .settings-section h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .settings-section button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .settings-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .settings-section p {
+            text-align: center;
+            color: #555;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 25%;
+            background-color: #f0f0f0;
+            border-right: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-list-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-container {
+            width: 75%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-list {
+            list-style: none;
+        }
+
+        .chat-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .chat-list li:hover {
+            background-color: #e0e0e0;
+        }
+
+        .chat-window {
+            flex: 1;
+            padding: 20px;
+            background-color: #ffffff;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .message {
+            margin: 10px 0;
+        }
+
+        .expand-section {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            display: none;
+        }
+
+        .expand-section button {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .expand-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .input-container {
+            display: flex;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .input-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .input-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .add-chat-container {
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        .add-chat-container input {
+            padding: 10px;
+            width: calc(100% - 120px);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .add-chat-container button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-chat-container button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="chat-list-container">
+        <ul class="chat-list" id="chatList">
+            <li data-chat="chat1">Channel 1</li>
+            <li data-chat="chat2">Channel 2</li>
+            <li data-chat="chat3">Channel 3</li>
+        </ul>
+    </div>
+    <div class="add-chat-container">
+        <input type="text" id="newChatInput" placeholder="New channel name">
+        <button onclick="addChat()">Add</button>
+    </div>
+</div>
+
+<div class="chat-container">
+    <div id="chat1" class="chat-window">
+        <div class="message">User1: Hello, how are you?</div>
+        <div class="message">User2: I'm good, thanks! How about you?</div>
+    </div>
+    <div id="chat2" class="chat-window">
+        <div class="message">User3: Welcome to Channel 2!</div>
+    </div>
+    <div id="chat3" class="chat-window">
+        <div class="message">User5: Hello everyone in Channel 3!</div>
+    </div>
+
+    <div class="input-container">
+        <input type="text" id="messageInput" placeholder="Type your message here...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="settings-section">
+    <h2>Settings</h2>
+    <button onclick="alert('Option 1 selected!')">Option 1</button>
+    <button onclick="alert('Option 2 selected!')">Option 2</button>
+    <button onclick="alert('Option 3 selected!')">Option 3</button>
+    <p>Customize your chat experience here!</p>
+</div>
+
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+    const socket = io();
+    let activeChatId = null;
+    const chatList = document.getElementById('chatList');
+
+
+
+    // Handle receiving messages for the active room
+    socket.on('receive_message', function(data) {
+        const chatWindow = document.getElementById(activeChatId);
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('message');
+        newMessage.textContent = `${data.username}: ${data.message}`;
+        chatWindow.appendChild(newMessage);
+        chatWindow.scrollTop = chatWindow.scrollHeight;  // Scroll to the bottom
+    });
+
+    // Handle chat list item clicks
+    chatList.addEventListener('click', function(e) {
+        const roomId = e.target.getAttribute('data-chat');
+        if (roomId) {
+            joinRoom(roomId);
+        }
+    });
+
+    // Send a message to the active room
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const messageText = messageInput.value.trim();
+        if (messageText && activeChatId) {
+            socket.emit('send_message', { username: 'User', message: messageText, room: activeChatId });
+            messageInput.value = '';  // Clear input
+        }
+    }
+
+    // Add a new chat room (channel)
+    function addChat() {
+        const newChatInput = document.getElementById('newChatInput');
+        const newChatName = newChatInput.value.trim();
+
+        if (newChatName) {
+            const newChatId = `chat${Date.now()}`;
+
+            // Add new chat room to the list
+            const newChatListItem = document.createElement('li');
+            newChatListItem.setAttribute('data-chat', newChatId);
+            newChatListItem.textContent = newChatName;
+            chatList.appendChild(newChatListItem);
+
+            // Create a new chat window
+            const chatContainer = document.querySelector('.chat-container');
+            const newChatWindow = document.createElement('div');
+            newChatWindow.id = newChatId;
+            newChatWindow.classList.add('chat-window');
+            newChatWindow.innerHTML = `<div class="message">Welcome to ${newChatName}!</div>`;
+            chatContainer.insertBefore(newChatWindow, document.querySelector('.input-container'));
+
+            // Automatically join the new chat room
+            joinRoom(newChatId);
+        }
+        newChatInput.value = '';  // Clear input
+    }
+
+    let currentRoomId = null;
+
+function joinRoom(roomId) {
+    if (currentRoomId) {
+        socket.emit('leave_channel', { username: 'User', room: currentRoomId });
+    }
+
+    activeChatId = roomId;
+    currentRoomId = roomId;
+    socket.emit('join_channel', { username: 'User', room: roomId });
+
+    // Hide all chat windows
+    const chatWindows = document.querySelectorAll('.chat-window');
+    chatWindows.forEach(window => window.style.display = 'none');
+
+    // Show the selected chat window
+    document.getElementById(roomId).style.display = 'block';
+}
+
+</script>
+</body>
+</html>
