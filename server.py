@@ -68,11 +68,17 @@ def give_page_friend_list():
 
 @socketio.on('send_message')
 def store_msg(room_ID, msg):
+    FID = setup_database.get_FID_by_name(room_ID)
+    sender_FID = setup_database.get_FID_by_name(request.remote_addr)
+
     print("msg recieved: " + str(msg) )
     print("room ID: " + str(room_ID))
-    FID = setup_database.get_FID_by_name(room_ID)
     print("FID: " + str(FID))
+    print("sender FID: " + str(sender_FID))
+    #setup_database.insert_chat(FID, sender_FID, msg, sender_FID)
     return msg
+
+
 
 
 @app.route('/')
