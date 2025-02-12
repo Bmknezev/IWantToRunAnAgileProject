@@ -19,6 +19,7 @@ def get_FID_by_IP(ip):
     loc_in_logged = logged_in['session'].index(ip)
     return logged_in['FID'][loc_in_logged]
 
+
 # need more info? get the specific index you need from the logger
 def get_index_by_IP(ip):
     return logged_in['session'].index(ip)
@@ -54,6 +55,24 @@ def message_page_load():#FID):
         return render_template('demo_page.html')
     else:
         return "Login First to Access Chats"
+
+
+@socketio.on('connecting_need_friends')
+def give_page_friend_list():
+    ip = request.remote_addr
+    FID = get_FID_by_IP(ip)
+    print(f"connecting friends for {FID}")
+    friends = setup_database.get_friends(FID)
+
+    return friends
+
+@socketio.on('send_message')
+def store_msg(room_ID, msg):
+    print("msg recieved: " + str(msg) )
+    print("room ID: " + str(room_ID))
+    FID = setup_database.get_FID_by_name(room_ID)
+    print("FID: " + str(FID))
+    return msg
 
 
 @app.route('/')
