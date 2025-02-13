@@ -44,7 +44,10 @@ def get_name_by_FID(FID):
     con = sqlite3.connect("test.db")
     cursor = con.cursor()
 
-    name = cursor.execute("SELECT DISTINCT username FROM User WHERE id = ?", (FID)).fetchall()
+    if isinstance(FID, tuple):
+        FID = FID[0]
+
+    name = cursor.execute("SELECT DISTINCT username FROM User WHERE id = ?", (FID,) ).fetchall()[0][0]
 
     return name
 

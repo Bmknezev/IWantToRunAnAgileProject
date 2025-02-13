@@ -69,16 +69,36 @@ def give_page_friend_list():
 @socketio.on('send_message')
 def store_msg(room_ID, msg):
     FID = setup_database.get_FID_by_name(room_ID)
-    sender_FID = setup_database.get_FID_by_name(request.remote_addr)
+    sender_FID = get_FID_by_IP(request.remote_addr)
 
     print("msg recieved: " + str(msg) )
     print("room ID: " + str(room_ID))
     print("FID: " + str(FID))
     print("sender FID: " + str(sender_FID))
+
+    sender_name = setup_database.get_name_by_FID(str(sender_FID))
+    print("sender name: " + str(sender_name))
     #setup_database.insert_chat(FID, sender_FID, msg, sender_FID)
-    return msg
+    response = [sender_name, msg]
+    return response
 
+@socketio.on('in_channel_get_msgs')
+def give_msgs(room_ID):
+    FID_A = get_FID_by_IP(request.remote_addr)
+    FID_B = setup_database.get_FID_by_name(room_ID)
+    chats = setup_database.find_chats( FID_A, FID_B )
+    chats_new = [[None for k in range(5)] for i in range(len(chats))]
 
+    for c in range(len(chats)):
+        print(chats[c])
+        chats_new[c][0] = setup_database.get_name_by_FID(chats[c][0])
+        chats_new[c][1] = setup_database.get_name_by_FID(chats[c][1])
+        chats_new[c][2] = chats[c][2]
+        chats_new[c][3] = chats[c][3]
+        chats_new[c][4] = setup_database.get_name_by_FID(chats[c][4])
+        print(chats_new[c])
+
+    return chats_new
 
 
 @app.route('/')

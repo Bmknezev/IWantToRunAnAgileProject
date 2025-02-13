@@ -263,6 +263,7 @@
 
         });
 
+
     }
 
 
@@ -292,6 +293,12 @@
             //socket.emit('send_message', { username: 'User', message: messageText, room: activeChatId });
             socket.emit('send_message', activeChatId, messageText, function(response) {
                 console.log("Response: ", response)
+                const chatWindow = document.getElementById(activeChatId);
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message');
+                newMessage.textContent = `${response[0]}: ${response[1]}`;
+                chatWindow.appendChild(newMessage);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             })
             messageInput.value = '';  // Clear input
         }
@@ -337,6 +344,25 @@ function joinRoom(roomId) {
     socket.emit('join_channel', { username: 'User', room: roomId });
 
     // Hide all chat windows
+    socket.emit('in_channel_get_msgs', roomId, function(chats) {
+        const chatWindow = document.getElementById(activeChatId);
+
+        while (chatWindow.firstChild) {
+            chatWindow.removeChild(chatWindow.firstChild);
+        }
+
+        for(i = 0; i < chats.length; i++) {
+            console.log("chat thingies: ", chats[i])
+
+            const newMessage = document.createElement('div');
+
+            newMessage.classList.add('message');
+            newMessage.textContent = `${chats[i][4]}: ${chats[i][2]}`;
+            chatWindow.appendChild(newMessage);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+    })
+
     const chatWindows = document.querySelectorAll('.chat-window');
     chatWindows.forEach(window => window.style.display = 'none');
 
