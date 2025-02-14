@@ -100,6 +100,29 @@ def give_msgs(room_ID):
 
     return chats_new
 
+@socketio.on('add_new_friend')
+def add_friend_to_list(FID_to_add):
+    FID_A = get_FID_by_IP(request.remote_addr)
+
+    #isFriendExist = ''
+    try:
+        isFriendExist = setup_database.get_name_by_FID(FID_to_add)
+    except IndexError:
+        return -1
+
+    if isFriendExist:
+        friend_names = setup_database.get_friends(FID_A)
+        friend_IDs = []
+        for friend_name in friend_names:
+            friend_IDs.append(setup_database.get_FID_by_name(friend_name) )
+        if FID_to_add in friend_IDs:
+            return -2
+        setup_database.add_friend(FID_A, FID_to_add)
+        return isFriendExist
+    else:
+        return -1
+
+
 
 @app.route('/')
 def index():

@@ -190,13 +190,16 @@ def diagnostics():
 
     sql_query = """SELECT name FROM sqlite_master WHERE type='table';"""
     print( cursor.execute(sql_query).fetchall() )
-    print(get_friends("0US8P7"))
-    print( find_chats( "0US8P7", "A30C7H") )
+    print(get_friends("Z3G4M7"))
+    print( find_chats( "Z3G4M7", "7AZ5J5") )
     print( cursor.execute("select * from User").fetchall() )
     print( cursor.execute("select * from ChatHistory").fetchall() )
 
-#add_friend("0US8P7", "A30C7H")
-#add_friend("0US8P7", "0CALL4")
-#add_friend("0US8P7", "W2BMCK")
+#add_friend("Z3G4M7", "7AZ5J5")
+#add_friend("Z3G4M7", "6A65PC")
+#add_friend("Z3G4M7", "3385OP")
+
+#wipeout()
+#populate_users()
 
 diagnostics()

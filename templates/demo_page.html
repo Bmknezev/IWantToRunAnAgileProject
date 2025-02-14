@@ -309,8 +309,24 @@
         const newChatInput = document.getElementById('newChatInput');
         const newChatName = newChatInput.value.trim();
 
-        if (newChatName) {
-            const newChatId = `chat${Date.now()}`;
+        let code = 1
+
+        code = socket.emit('add_new_friend', newChatName, function(validityCode) {
+            console.log(validityCode)
+            if(validityCode == -1) {
+                console.log("ERROR: Friend Code Invalid")
+                code = 0
+                return 0
+            }
+            if(validityCode == -2) {
+                console.log("ERROR: Friend Already Added")
+                code = 0
+                return 0
+            }
+        })
+
+        if (newChatName && code == 1) {
+            const newChatId = `${newChatName}`;
 
             // Add new chat room to the list
             const newChatListItem = document.createElement('li');
