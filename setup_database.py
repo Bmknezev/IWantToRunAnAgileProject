@@ -196,11 +196,13 @@ def diagnostics():
     cursor = con.cursor()
 
     sql_query = """SELECT name FROM sqlite_master WHERE type='table';"""
-    print( cursor.execute(sql_query).fetchall() )
-    print(get_friends("XCPU2S"))
-    print( find_chats( "XCPU2S", "9POI96") )
-    print( cursor.execute("select * from User").fetchall() )
-    print( cursor.execute("select * from ChatHistory").fetchall() )
+    print("Tables: ",  cursor.execute(sql_query).fetchall() )
+
+    print("Users: ", cursor.execute("select * from User").fetchall() )
+    print("All Chats: ",  cursor.execute("select * from ChatHistory").fetchall() )
+    print("Said's Friends: ", get_friends(get_FID_by_name("Said")))
+    print("\nSaid and Barry's DMs")
+    print(find_chats(get_FID_by_name("Said"), get_FID_by_name("Barry")))
 
 
 
