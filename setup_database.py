@@ -80,7 +80,7 @@ def insert_chat(FID_A, FID_B, message, fromWho):
 
     order = cursor.execute(f"select count(*) from ChatHistory where FID_1 = '{fid_1}' and FID_2 = '{fid_2}'").fetchall()[0][0]
     order = order + 1
-    #print(order)
+    print(f"msg order: {order}")
 
     cursor.execute("""
                    INSERT INTO ChatHistory (FID_1, FID_2, message, msgOrder, fromWho) 
@@ -134,11 +134,13 @@ def populate_users():
     FID_B = id_generator()
     FID_C = id_generator()
     FID_D = id_generator()
+    FID_F = id_generator()
 
     user_admin = "Said"
     user_b = "Barry"
     user_c = "Claire"
     user_d = "Dorothy"
+    user_to_add_as_friend = "Francois"
 
     password_universal = "123"
 
@@ -146,6 +148,7 @@ def populate_users():
     create_user(user_b, password_universal, FID_B)
     create_user(user_c, password_universal, FID_C)
     create_user(user_d, password_universal, FID_D)
+    create_user(user_to_add_as_friend, password_universal, FID_F)
 
     print(cursor.execute("select * from User").fetchall())
 
@@ -165,6 +168,10 @@ def populate_users():
     insert_chat(FID_A, FID_D, message_5, FID_A)
     insert_chat(FID_A, FID_D, message_6, FID_D)
 
+    add_friend(FID_A, FID_B)
+    add_friend(FID_A, FID_C)
+    add_friend(FID_A, FID_D)
+
     print( find_chats(FID_A, FID_B) )
     print( find_chats(FID_A, FID_C) )
     print( find_chats(FID_A, FID_D) )
@@ -182,7 +189,7 @@ def wipeout():
     print("Total chats affected: ", sql_del2.rowcount)
     con.commit()
 
-#populate_users()
+
 
 def diagnostics():
     con = sqlite3.connect("test.db")
@@ -190,16 +197,15 @@ def diagnostics():
 
     sql_query = """SELECT name FROM sqlite_master WHERE type='table';"""
     print( cursor.execute(sql_query).fetchall() )
-    print(get_friends("Z3G4M7"))
-    print( find_chats( "Z3G4M7", "7AZ5J5") )
+    print(get_friends("XCPU2S"))
+    print( find_chats( "XCPU2S", "9POI96") )
     print( cursor.execute("select * from User").fetchall() )
     print( cursor.execute("select * from ChatHistory").fetchall() )
 
-#add_friend("Z3G4M7", "7AZ5J5")
-#add_friend("Z3G4M7", "6A65PC")
-#add_friend("Z3G4M7", "3385OP")
+
 
 #wipeout()
 #populate_users()
 
 diagnostics()
+

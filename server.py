@@ -78,7 +78,7 @@ def store_msg(room_ID, msg):
 
     sender_name = setup_database.get_name_by_FID(str(sender_FID))
     print("sender name: " + str(sender_name))
-    #setup_database.insert_chat(FID, sender_FID, msg, sender_FID)
+    setup_database.insert_chat(FID, sender_FID, msg, sender_FID)
     response = [sender_name, msg]
     return response
 
