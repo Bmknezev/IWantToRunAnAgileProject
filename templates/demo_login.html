@@ -82,7 +82,6 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
     <script>
 	    var socket = io();
-
         window.onbeforeunload = function () {
             socket.emit('client_disconnecting', "");
         }
@@ -92,21 +91,18 @@
 
             username = document.getElementById('username').value;
             password = document.getElementById('password').value;
-            result = socket.emit("login", username, password);
-            console.log(result);
-            // Redirect to another page
-            window.location.replace(window.location.href + "/chat");
-            //window.location.href = 'demo_page.html';
+            socket.emit("login", username, password);
         }
-        socket.on('login_success', function(data) {
-    // Redirect the browser to the URL sent by the server
-    window.location.href = data.redirect_url;
-});
 
-socket.on('login_fail', function(data) {
-    // Display the error message to the user
-    alert(data.message);
-});
+        socket.on('login_success', function(data) {
+            // Redirect the browser to the URL sent by the server
+            window.location.replace(window.location.href + "/chat");
+        });
+
+        socket.on('login_fail', function(data) {
+            // Display the error message to the user
+            document.getElementById("demo").innerHTML = "Invalid username or password";
+        });
 
     </script>
 </head>
@@ -123,6 +119,7 @@ socket.on('login_fail', function(data) {
                 <input type="password" id="password" name="password" placeholder="Enter your password">
             </div>
             <button href="/chat" type="submit" class="login-btn">Login</button>
+            <p id="demo"></p>
         </form>
         <div class="footer-text">
             Don't have an account? <a href="#">Sign up</a>

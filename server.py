@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit,send
 from pandas import DataFrame
 
 import setup_database
@@ -41,10 +41,12 @@ def login_handler(username, password):
         logged_in['password'].append(password)
         logged_in['session'].append(request.remote_addr)
         #return redirect(url_for('message_page_load', FID=FID))
-        return render_template("demo_page.html")
+        emit('login_success', "/chat")
+        return
     else:
         print("Login Fail")
-        return redirect("/chat")
+        emit('login_fail', "Login Failed")
+        return
 
 
 @app.route('/chat')
@@ -122,7 +124,10 @@ def add_friend_to_list(FID_to_add):
     else:
         return -1
 
-
+@socketio.on('notification')
+def notify_user(msg):
+    print("notification: " + msg)
+    return
 
 @app.route('/')
 def index():

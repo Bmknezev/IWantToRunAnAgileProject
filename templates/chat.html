@@ -20,6 +20,7 @@
             var messageItem = document.createElement('div');
             messageItem.textContent = msg;
             messages.appendChild(messageItem);
+            showNotification();
         });
 
         function sendMessage() {
@@ -30,6 +31,20 @@
                 input.value = '';
             }
         }
+        function showNotification() {
+  // Check if the browser supports notifications
+  if (!(Notification.permission === "granted")) {
+    console.log("This browser does not support notifications.");
+    socket.emit("notification", "This browser does not support notifications.");
+    return;
+  }
+  // Check if the user has granted permission to show notifications
+  if (Notification.permission === "granted") {
+    // show a notification
+    new Notification("New Message");
+    socket.emit("notification", "New Message");
+  }
+}
     </script>
 </body>
 </html>

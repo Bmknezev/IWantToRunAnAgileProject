@@ -224,7 +224,8 @@
 <!-- Settings Modal -->
 <div class="settings-section">
     <h2>Settings</h2>
-    <button onclick="alert('Option 1 selected!')">Option 1</button>
+    <button id="enable" onclick="askNotificationPermission()">Enable notifications</button>
+    <button onclick="showNotification()">Notify me!</button>
     <button onclick="alert('Option 2 selected!')">Option 2</button>
     <button onclick="alert('Option 3 selected!')">Option 3</button>
     <p>Customize your chat experience here!</p>
@@ -275,6 +276,7 @@
         newMessage.textContent = `${data.username}: ${data.message}`;
         chatWindow.appendChild(newMessage);
         chatWindow.scrollTop = chatWindow.scrollHeight;  // Scroll to the bottom
+        showNotification();
     });
 
     // Handle chat list item clicks
@@ -311,7 +313,7 @@
 
         let code = 1
 
-        code = socket.emit('add_new_friend', newChatName, function(validityCode) {
+        socket.emit('add_new_friend', newChatName, function(validityCode) {
             console.log(validityCode)
             if(validityCode == -1) {
                 console.log("ERROR: Friend Code Invalid")
@@ -385,6 +387,30 @@ function joinRoom(roomId) {
 
     // Show the selected chat window
     document.getElementById(roomId).style.display = 'block';
+}
+function askNotificationPermission() {
+  // Check if the browser supports notifications
+  if (!("Notification" in window)) {
+    console.log("This browser does not support notifications.");
+    return;
+  }
+  Notification.requestPermission().then((permission) => {
+    // set the button to shown or hidden, depending on what the user answers
+    enable.style.display = permission === "granted" ? "none" : "block";
+  });
+}
+
+function showNotification() {
+  // Check if the browser supports notifications
+  if (!("Notification" in window)) {
+    console.log("This browser does not support notifications.");
+    return;
+  }
+  // Check if the user has granted permission to show notifications
+  if (Notification.permission === "granted") {
+    // show a notification
+    new Notification("New Message");
+  }
 }
 
 </script>
