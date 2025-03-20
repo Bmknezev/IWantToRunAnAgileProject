@@ -82,6 +82,8 @@ def store_msg(room_ID, msg):
     print("sender name: " + str(sender_name))
     setup_database.insert_chat(FID, sender_FID, msg, sender_FID)
     response = [sender_name, msg]
+    emit('receive_message', response, to=sender_name)
+
     return response
 
 @socketio.on('in_channel_get_msgs')
@@ -128,6 +130,15 @@ def add_friend_to_list(FID_to_add):
 def notify_user(msg):
     print("notification: " + msg)
     return
+
+@socketio.on('test')
+def test():
+    print("here")
+    return
+
+
+
+
 
 @app.route('/')
 def index():

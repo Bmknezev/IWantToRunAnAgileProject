@@ -240,6 +240,10 @@
     window.onload = function getUserDatas() {
         console.log('The Script will load now.');
 
+        if (Notification.permission === "granted") {
+            enable.style.display = "block";
+        }
+
         socket.emit('connecting_need_friends', function(friend_list) {
             console.log('Received response: ', friend_list);
             console.log(typeof friend_list);
@@ -270,12 +274,14 @@
 
     // Handle receiving messages for the active room
     socket.on('receive_message', function(data) {
+        console.log("got message")
         const chatWindow = document.getElementById(activeChatId);
         const newMessage = document.createElement('div');
         newMessage.classList.add('message');
         newMessage.textContent = `${data.username}: ${data.message}`;
         chatWindow.appendChild(newMessage);
         chatWindow.scrollTop = chatWindow.scrollHeight;  // Scroll to the bottom
+        socket.emit('test')
         showNotification();
     });
 
@@ -303,6 +309,7 @@
                 chatWindow.scrollTop = chatWindow.scrollHeight;
             })
             messageInput.value = '';  // Clear input
+        console.log(currentRoomId)
         }
     }
 
