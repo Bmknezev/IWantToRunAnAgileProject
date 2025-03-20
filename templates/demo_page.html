@@ -228,7 +228,19 @@
     <button onclick="showNotification()">Notify me!</button>
     <button onclick="alert('Option 2 selected!')">Option 2</button>
     <button onclick="alert('Option 3 selected!')">Option 3</button>
-    <p>Customize your chat experience here!</p>
+    <p id="customizeChatHereP">Customize your chat experience here!</p>
+    <form action="/action_page.php">
+
+        <input type="radio" id="html" name="fav_language" value="lightmode" onclick="lightMode()">
+        <label for="html">Light Mode</label><br>
+
+        <input type="radio" id="css" name="fav_language" value="noir" onclick="noir()">
+        <label for="css">Noir Mode</label><br>
+
+        <input type="radio" id="javascript" name="fav_language" value="hackerman">
+        <label for="javascript">Hackerman</label><br>
+
+    </form>
 </div>
 
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
@@ -298,13 +310,20 @@
             isInChat = -1;
             for(i = 0; i < name.length; i++) {
                 if(name[i] === activeChatId) {
-                  isInChat = i;
-                  console.log("its in chat")
+                    isInChat = i;
+                    console.log("its in chat")
+                    console.log("updating current chat");
+                    const chatWindow = document.getElementById(activeChatId);
+                    const newMessage = document.createElement('div');
+                    newMessage.classList.add('message');
+                    newMessage.textContent = `${name[isInChat]}: ${message[isInChat]}`;
+                    chatWindow.appendChild(newMessage);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
                 }
             }
             if(check === 1 && isInChat < 0) {
                 showNotification();
-            }
+            }/*
             else if(check === 1 && isInChat >= 0) {
                 console.log("updating current chat");
                 const chatWindow = document.getElementById(activeChatId);
@@ -313,7 +332,7 @@
                 newMessage.textContent = `${name[isInChat]}: ${message[isInChat]}`;
                 chatWindow.appendChild(newMessage);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-            }
+            }*/
         });
     }, 500)
 
@@ -324,6 +343,7 @@
             joinRoom(roomId);
         }
     });
+
 
     // Send a message to the active room
     function sendMessage() {
@@ -452,6 +472,150 @@ function showNotification() {
   }
 }
 
+// stylize the page
+function lightMode() {
+        document.querySelector('.settings-section').style.backgroundColor = '#beebfa';
+        document.querySelector('.settings-section').style.color = '#333';
+        document.querySelector('.settings-section').style.borderTop = '1px solid #ccc';
+
+        document.querySelector('.settings-section button').style.backgroundColor = '#007bff';
+        document.querySelector('.settings-section button').style.color = 'white';
+
+        document.styleSheets[0].insertRule(
+            '.add-chat-container button:hover { background-color: #0056b3 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.settings-section p').style.color = '#555';
+
+        document.querySelector('.sidebar').style.backgroundColor = '#f0f0f0';
+        document.querySelector('.sidebar').style.borderRight = '1px solid #ccc';
+
+        //document.querySelector('.chat-list li').style.borderBottom = '1px solid #ccc';
+        const listItems = document.querySelectorAll('.chat-list li');
+        listItems.forEach(item => {
+          item.style.borderBottom = '1px solid #ccc';
+        });
+
+        //document.querySelector('.chat-list li:hover').style.backgroundColor = '#e0e0e0';
+        document.styleSheets[0].insertRule(
+            '.chat-list li:hover { background-color: #e0e0e0 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+
+
+        document.querySelector('.expand-section').style.border = '1px solid #ccc';
+        document.querySelector('.expand-section').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.expand-section button').style.backgroundColor = '#007bff';
+        document.querySelector('.expand-section button').style.color = 'white';
+
+        //document.querySelector('.expand-section button:hover').style.backgroundColor = '#0056b3';
+        document.styleSheets[0].insertRule(
+            '.expand-section button:hover { background-color: #0056b3 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.input-container').style.borderTop = '1px solid #ccc';
+        document.querySelector('.input-container').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.input-container button').style.backgroundColor = '#007bff';
+        document.querySelector('.input-container button').style.color = 'white';
+
+        //document.querySelector('.input-container button:hover').style.backgroundColor = '#0056b3';
+        document.styleSheets[0].insertRule(
+            '.input-container button:hover { background-color: #0056b3 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.add-chat-container').style.borderTop = '1px solid #ccc';
+        document.querySelector('.add-chat-container').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.add-chat-container button').style.backgroundColor = '#28a745';
+        document.querySelector('.add-chat-container button').style.color = 'white';
+
+        //document.querySelector('.add-chat-container button:hover').style.backgroundColor = '#218838';
+        document.styleSheets[0].insertRule(
+            '.add-chat-container button:hover { background-color: #218838 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        // non-existent stuff to not throw issues
+
+        //document.querySelector('.chat-window').style.backgroundColor = '#ffffff';
+        const chatWindow = document.querySelector('.chat-window');
+        if (chatWindow) {
+            chatWindow.style.backgroundColor = '#ffffff';  // Change background color
+        } else {
+            console.log('Element .chat-window not loaded yet. Select a chat to apply');
+        }
+    }
+function noir() {
+        document.querySelector('.settings-section').style.backgroundColor = '#303640';
+        document.querySelector('.settings-section').style.color = '#fff'; //
+        document.querySelector('.settings-section').style.borderTop = '1px solid #ccc'; //
+
+        document.querySelector('.settings-section button').style.backgroundColor = '#007bff';
+        document.querySelector('.settings-section button').style.color = 'white';
+
+        //document.querySelector('.settings-section button:hover').style.backgroundColor = '#0056b3';
+        document.styleSheets[0].insertRule(
+            '.add-chat-container button:hover { background-color: #0056b3 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.settings-section p').style.color = '#fff';
+
+        document.querySelector('.sidebar').style.backgroundColor = '#262626';
+        document.querySelector('.sidebar').style.borderRight = '1px solid #ccc';
+
+        document.querySelector('.chat-list li').style.borderBottom = '1px solid #ccc';
+
+        //document.querySelector('.chat-list li:hover').style.backgroundColor = '#232324';
+        document.styleSheets[0].insertRule(
+            '.chat-list li:hover { background-color: #232324 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.chat-window').style.backgroundColor = '#212126';
+
+        document.querySelector('.expand-section').style.border = '1px solid #ccc';
+        document.querySelector('.expand-section').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.expand-section button').style.backgroundColor = '#007bff';
+        document.querySelector('.expand-section button').style.color = 'white';
+
+        //document.querySelector('.expand-section button:hover').style.backgroundColor = '#0056b3';
+        document.styleSheets[0].insertRule(
+            '.expand-section button:hover { background-color: #0056b3 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.input-container').style.borderTop = '1px solid #ccc';
+        document.querySelector('.input-container').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.input-container button').style.backgroundColor = '#007bff';
+        document.querySelector('.input-container button').style.color = 'white';
+
+        //document.querySelector('.input-container button:hover').style.backgroundColor = '#0056b3';
+        document.styleSheets[0].insertRule(
+            '.input-container button:hover { background-color: #0056b3 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.add-chat-container').style.borderTop = '1px solid #ccc';
+        document.querySelector('.add-chat-container').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.add-chat-container button').style.backgroundColor = '#28a745';
+        document.querySelector('.add-chat-container button').style.color = 'white';
+
+        //document.querySelector('.add-chat-container button:hover').style.backgroundColor = '#218838';
+        document.styleSheets[0].insertRule(
+            '.add-chat-container button:hover { background-color: #218838 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+    }
 </script>
 </body>
 </html>
