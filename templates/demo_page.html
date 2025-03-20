@@ -267,7 +267,6 @@
 
     }
 
-
     // Handle receiving messages for the active room
     socket.on('receive_message', function(data) {
         const chatWindow = document.getElementById(activeChatId);
@@ -278,6 +277,39 @@
         chatWindow.scrollTop = chatWindow.scrollHeight;  // Scroll to the bottom
         showNotification();
     });
+
+    var intervalID = setInterval(function() {
+        socket.emit('ask_for_update', function(check, name, id, message) {
+            console.log("code: ", check);
+            if(check === 0) {
+                return;
+            }
+            console.log("name: ", name);
+            console.log("id: ", id);
+            console.log("message: ", message)
+            console.log("current chat id: ", activeChatId)
+            console.log("is this the current chat? ", activeChatId === name);
+            isInChat = -1;
+            for(i = 0; i < name.length; i++) {
+                if(name[i] === activeChatId) {
+                  isInChat = i;
+                  console.log("its in chat")
+                }
+            }
+            if(check === 1 && isInChat < 0) {
+                showNotification();
+            }
+            else if(check === 1 && isInChat >= 0) {
+                console.log("updating current chat");
+                const chatWindow = document.getElementById(activeChatId);
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message');
+                newMessage.textContent = `${name[isInChat]}: ${message[isInChat]}`;
+                chatWindow.appendChild(newMessage);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        });
+    }, 500)
 
     // Handle chat list item clicks
     chatList.addEventListener('click', function(e) {

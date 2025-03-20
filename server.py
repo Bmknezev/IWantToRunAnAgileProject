@@ -13,6 +13,10 @@ logged_in = {
     'session': [],
 }
 
+isUpdated = {
+
+}
+
 # now you can access the FID based on the IP address of someboy
 # get_FID_by_IP(request.remote_addr) # this is the fastest way to use it in any socketio function
 def get_FID_by_IP(ip):
@@ -40,6 +44,7 @@ def login_handler(username, password):
         logged_in['username'].append(username)
         logged_in['password'].append(password)
         logged_in['session'].append(request.remote_addr)
+        isUpdated[FID] = {"isUpdated": 0, "fromWho": "", "fromID": "", "message": ""}
         #return redirect(url_for('message_page_load', FID=FID))
         emit('login_success', "/chat")
         return
@@ -78,11 +83,31 @@ def store_msg(room_ID, msg):
     print("FID: " + str(FID))
     print("sender FID: " + str(sender_FID))
 
+    if sender_FID in logged_in['FID']:
+        isUpdated[FID]["isUpdated"] = 1
+        isUpdated[FID]["fromWho"].append(setup_database.get_name_by_FID(get_FID_by_IP(request.remote_addr)))
+        isUpdated[FID]["fromID"].append( get_FID_by_IP(request.remote_addr))
+        isUpdated[FID]["message"].append(msg)
+
     sender_name = setup_database.get_name_by_FID(str(sender_FID))
     print("sender name: " + str(sender_name))
     setup_database.insert_chat(FID, sender_FID, msg, sender_FID)
     response = [sender_name, msg]
     return response
+
+@socketio.on('ask_for_update')
+def refresh():
+    print("test refresh: ", isUpdated[get_FID_by_IP(request.remote_addr)])
+    check = isUpdated[get_FID_by_IP(request.remote_addr)]["isUpdated"]
+    name = isUpdated[get_FID_by_IP(request.remote_addr)]["fromWho"]
+    id = isUpdated[get_FID_by_IP(request.remote_addr)]["fromID"]
+    message = isUpdated[get_FID_by_IP(request.remote_addr)]["message"]
+
+    isUpdated[get_FID_by_IP(request.remote_addr)]["isUpdated"] = 0
+    isUpdated[get_FID_by_IP(request.remote_addr)]["fromWho"] = []
+    isUpdated[get_FID_by_IP(request.remote_addr)]["fromID"] = []
+    isUpdated[get_FID_by_IP(request.remote_addr)]["message"] = []
+    return check, name, id, message
 
 @socketio.on('in_channel_get_msgs')
 def give_msgs(room_ID):
@@ -100,6 +125,7 @@ def give_msgs(room_ID):
         chats_new[c][4] = setup_database.get_name_by_FID(chats[c][4])
         print(chats_new[c])
 
+    isUpdated[FID_A]["isUpdated"] = 0
     return chats_new
 
 @socketio.on('add_new_friend')
