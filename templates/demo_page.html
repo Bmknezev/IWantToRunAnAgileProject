@@ -238,7 +238,7 @@
         <input type="radio" id="css" name="fav_language" value="noir" onclick="noir()">
         <label for="css">Noir Mode</label><br>
 
-        <input type="radio" id="javascript" name="fav_language" value="hackerman">
+        <input type="radio" id="javascript" name="fav_language" value="hackerman" onclick="hackerman()">
         <label for="javascript">Hackerman</label><br>
 
     </form>
@@ -258,6 +258,7 @@
                     // Apply color to the new .message element
                     if      ( chatColor === 0 ) node.style.color = '#000000';
                     else if ( chatColor === 1 ) node.style.color = '#ffffff'
+                    else if ( chatColor === 2 ) node.style.color = '#149414'
                 }
             });
         });
@@ -692,6 +693,112 @@ function noir() {
         // Loop through each element and apply the color style
         messages.forEach(message => {
             message.style.color = '#ffffff';
+        });
+        //const chatWindow = document.querySelector('.chat-window');
+        //if (chatWindow) {
+        //    chatWindow.style.backgroundColor = '#ffffff';  // Change background color
+        //} else {
+        //    console.log('Element .chat-window not loaded yet. Select a chat to apply');
+        //}
+
+        document.querySelector('.expand-section').style.border = '1px solid #ccc';
+        document.querySelector('.expand-section').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.expand-section button').style.backgroundColor = '#007bff';
+        document.querySelector('.expand-section button').style.color = 'white';
+    }
+
+function hackerman() {
+
+        chatColor = 2;
+        document.querySelector('.settings-section').style.backgroundColor = '#000000';
+        document.querySelector('.settings-section').style.color = '#149414';
+        document.querySelector('.settings-section').style.borderTop = '1px solid #000000';
+
+        document.querySelector('.settings-section button').style.backgroundColor = '#149414';
+        document.querySelector('.settings-section button').style.color = 'white';
+
+        document.styleSheets[0].insertRule(
+            '.add-chat-container button:hover { background-color: #000000  }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.settings-section p').style.color = '#149414';
+
+        document.querySelector('.sidebar').style.backgroundColor = '#000000';
+        document.querySelector('.sidebar').style.borderRight = '1px solid #000000';
+
+        //document.querySelector('.chat-list li').style.borderBottom = '1px solid #ccc';
+        const listItems = document.querySelectorAll('.chat-list li');
+        listItems.forEach(item => {
+          item.style.borderBottom = '1px solid #000000';
+        });
+
+        //document.querySelector('.chat-list li:hover').style.backgroundColor = '#e0e0e0';
+        document.styleSheets[0].insertRule(
+            '.chat-list li { color: #149414 }',
+            document.styleSheets[0].cssRules.length
+        );
+        document.styleSheets[0].insertRule(
+            '.chat-list li:hover { background-color: #0c3605 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        //document.querySelector('.expand-section button:hover').style.backgroundColor = '#0056b3';
+        document.styleSheets[0].insertRule(
+            '.expand-section button:hover { background-color: #0056b3 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.input-container').style.borderTop = '1px solid #000000';
+        document.querySelector('.input-container').style.backgroundColor = '#000000';
+
+        document.querySelector('.input-container input').style.backgroundColor = '#6b6d70';
+
+        document.styleSheets[0].insertRule(
+            '.input-container input::placeholder { color: #ffffff; }', // Change to the desired color
+            document.styleSheets[0].cssRules.length
+        );
+        document.querySelector('.input-container input').style.color = '#ffffff';
+
+        document.querySelector('.input-container button').style.backgroundColor = '#149414';
+        document.querySelector('.input-container button').style.color = 'white';
+
+        //document.querySelector('.input-container button:hover').style.backgroundColor = '#0056b3';
+        document.styleSheets[0].insertRule(
+            '.input-container button:hover { background-color: #2b5329 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.add-chat-container').style.borderTop = '1px solid #000';
+        document.querySelector('.add-chat-container').style.backgroundColor = '#000000';
+
+        document.querySelector('.add-chat-container button').style.backgroundColor = '#28a745';
+        document.querySelector('.add-chat-container button').style.color = 'white';
+        document.querySelector('.add-chat-container input').style.backgroundColor = '#6b6d70';
+
+        document.styleSheets[0].insertRule(
+            '.add-chat-container input::placeholder { color: #ffffff; }', // Change to the desired color
+            document.styleSheets[0].cssRules.length
+        );
+        document.querySelector('.add-chat-container input').style.color = '#ffffff';
+
+        //document.querySelector('.add-chat-container button:hover').style.backgroundColor = '#218838';
+        document.styleSheets[0].insertRule(
+            '.add-chat-container button:hover { background-color: #218838 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        // non-existent stuff to not throw issues
+
+        //document.querySelector('.chat-window').style.backgroundColor = '#ffffff';
+        document.querySelector('.chat-container').style.background = '#000000';
+        // Select all elements with the 'message' class
+        const messages = document.querySelectorAll('.message');
+
+        // Loop through each element and apply the color style
+        messages.forEach(message => {
+            message.style.color = '#149414';
         });
         //const chatWindow = document.querySelector('.chat-window');
         //if (chatWindow) {
