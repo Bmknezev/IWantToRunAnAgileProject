@@ -16,7 +16,7 @@
             background-color: #beebfa;
             color: #333;
             border-top: 1px solid #ccc;
-            border-radius: 5px;
+            /*border-radius: 5px;*/
             text-align: center;
         }
 
@@ -94,13 +94,14 @@
         .chat-window {
             flex: 1;
             padding: 20px;
-            background-color: #ffffff;
+            background-color: inherit;
             overflow-y: auto;
             display: none;
         }
 
         .message {
             margin: 10px 0;
+            color: #000000
         }
 
         .expand-section {
@@ -248,6 +249,25 @@
     const socket = io();
     let activeChatId = null;
     const chatList = document.getElementById('chatList');
+
+    chatColor = 0;
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1 && node.classList.contains('message')) {
+                    // Apply color to the new .message element
+                    if      ( chatColor === 0 ) node.style.color = '#000000';
+                    else if ( chatColor === 1 ) node.style.color = '#ffffff'
+                }
+            });
+        });
+    });
+
+// Set up the observer to watch for added nodes within the chat window
+    observer.observe(document.querySelector('.chat-container'), {
+        childList: true, // Watch for added or removed child nodes
+        subtree: true    // Watch for changes in all descendants
+    });
 
     window.onload = function getUserDatas() {
         console.log('The Script will load now.');
@@ -474,6 +494,7 @@ function showNotification() {
 
 // stylize the page
 function lightMode() {
+        chatColor = 0;
         document.querySelector('.settings-section').style.backgroundColor = '#beebfa';
         document.querySelector('.settings-section').style.color = '#333';
         document.querySelector('.settings-section').style.borderTop = '1px solid #ccc';
@@ -482,7 +503,7 @@ function lightMode() {
         document.querySelector('.settings-section button').style.color = 'white';
 
         document.styleSheets[0].insertRule(
-            '.add-chat-container button:hover { background-color: #0056b3 !important; }',
+            '.add-chat-container button:hover { background-color: #0056b3  }',
             document.styleSheets[0].cssRules.length
         );
 
@@ -490,6 +511,15 @@ function lightMode() {
 
         document.querySelector('.sidebar').style.backgroundColor = '#f0f0f0';
         document.querySelector('.sidebar').style.borderRight = '1px solid #ccc';
+
+        document.styleSheets[0].insertRule(
+            '.chat-list li { color: #000000 }',
+            document.styleSheets[0].cssRules.length
+        );
+        document.styleSheets[0].insertRule(
+            '.chat-list li:hover { background-color: #ffffff !important; }',
+            document.styleSheets[0].cssRules.length
+        );
 
         //document.querySelector('.chat-list li').style.borderBottom = '1px solid #ccc';
         const listItems = document.querySelectorAll('.chat-list li');
@@ -503,14 +533,6 @@ function lightMode() {
             document.styleSheets[0].cssRules.length
         );
 
-
-
-        document.querySelector('.expand-section').style.border = '1px solid #ccc';
-        document.querySelector('.expand-section').style.backgroundColor = '#f9f9f9';
-
-        document.querySelector('.expand-section button').style.backgroundColor = '#007bff';
-        document.querySelector('.expand-section button').style.color = 'white';
-
         //document.querySelector('.expand-section button:hover').style.backgroundColor = '#0056b3';
         document.styleSheets[0].insertRule(
             '.expand-section button:hover { background-color: #0056b3 !important; }',
@@ -519,6 +541,13 @@ function lightMode() {
 
         document.querySelector('.input-container').style.borderTop = '1px solid #ccc';
         document.querySelector('.input-container').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.input-container input').style.backgroundColor = '#ffffff';
+        document.querySelector('.input-container input').style.color = '#000000';
+        document.styleSheets[0].insertRule(
+            '.input-container input::placeholder { color: #505050; }', // Change to the desired color
+            document.styleSheets[0].cssRules.length
+        );
 
         document.querySelector('.input-container button').style.backgroundColor = '#007bff';
         document.querySelector('.input-container button').style.color = 'white';
@@ -534,6 +563,13 @@ function lightMode() {
 
         document.querySelector('.add-chat-container button').style.backgroundColor = '#28a745';
         document.querySelector('.add-chat-container button').style.color = 'white';
+
+        document.styleSheets[0].insertRule(
+            '.add-chat-container input::placeholder { color: #505050; }', // Change to the desired color
+            document.styleSheets[0].cssRules.length
+        );
+        document.querySelector('.add-chat-container input').style.backgroundColor = '#ffffff';
+        document.querySelector('.add-chat-container input').style.color = '#000000';
 
         //document.querySelector('.add-chat-container button:hover').style.backgroundColor = '#218838';
         document.styleSheets[0].insertRule(
@@ -544,47 +580,62 @@ function lightMode() {
         // non-existent stuff to not throw issues
 
         //document.querySelector('.chat-window').style.backgroundColor = '#ffffff';
-        const chatWindow = document.querySelector('.chat-window');
-        if (chatWindow) {
-            chatWindow.style.backgroundColor = '#ffffff';  // Change background color
-        } else {
-            console.log('Element .chat-window not loaded yet. Select a chat to apply');
-        }
-    }
-function noir() {
-        document.querySelector('.settings-section').style.backgroundColor = '#303640';
-        document.querySelector('.settings-section').style.color = '#fff'; //
-        document.querySelector('.settings-section').style.borderTop = '1px solid #ccc'; //
+        document.querySelector('.chat-container').style.background = '#ffffff';
 
-        document.querySelector('.settings-section button').style.backgroundColor = '#007bff';
-        document.querySelector('.settings-section button').style.color = 'white';
+        const messages = document.querySelectorAll('.message');
 
-        //document.querySelector('.settings-section button:hover').style.backgroundColor = '#0056b3';
-        document.styleSheets[0].insertRule(
-            '.add-chat-container button:hover { background-color: #0056b3 !important; }',
-            document.styleSheets[0].cssRules.length
-        );
+        // Loop through each element and apply the color style
+        messages.forEach(message => {
+            message.style.color = '#000000';
+        });
 
-        document.querySelector('.settings-section p').style.color = '#fff';
-
-        document.querySelector('.sidebar').style.backgroundColor = '#262626';
-        document.querySelector('.sidebar').style.borderRight = '1px solid #ccc';
-
-        document.querySelector('.chat-list li').style.borderBottom = '1px solid #ccc';
-
-        //document.querySelector('.chat-list li:hover').style.backgroundColor = '#232324';
-        document.styleSheets[0].insertRule(
-            '.chat-list li:hover { background-color: #232324 !important; }',
-            document.styleSheets[0].cssRules.length
-        );
-
-        document.querySelector('.chat-window').style.backgroundColor = '#212126';
+        //const chatWindow = document.querySelector('.chat-window');
+        //if (chatWindow) {
+          //  chatWindow.style.backgroundColor = '#ffffff';  // Change background color
+        //} else {
+          //  console.log('Element .chat-window not loaded yet. Select a chat to apply');
+        //}
 
         document.querySelector('.expand-section').style.border = '1px solid #ccc';
         document.querySelector('.expand-section').style.backgroundColor = '#f9f9f9';
 
         document.querySelector('.expand-section button').style.backgroundColor = '#007bff';
         document.querySelector('.expand-section button').style.color = 'white';
+    }
+function noir() {
+        chatColor = 1;
+        document.querySelector('.settings-section').style.backgroundColor = '#2d2d30';
+        document.querySelector('.settings-section').style.color = '#ffffff';
+        document.querySelector('.settings-section').style.borderTop = '1px solid #2d2d30';
+
+        document.querySelector('.settings-section button').style.backgroundColor = '#007bff';
+        document.querySelector('.settings-section button').style.color = 'white';
+
+        document.styleSheets[0].insertRule(
+            '.add-chat-container button:hover { background-color: #000000  }',
+            document.styleSheets[0].cssRules.length
+        );
+
+        document.querySelector('.settings-section p').style.color = '#ffffff';
+
+        document.querySelector('.sidebar').style.backgroundColor = '#292c32';
+        document.querySelector('.sidebar').style.borderRight = '1px solid #292c32';
+
+        //document.querySelector('.chat-list li').style.borderBottom = '1px solid #ccc';
+        const listItems = document.querySelectorAll('.chat-list li');
+        listItems.forEach(item => {
+          item.style.borderBottom = '1px solid #ccc';
+        });
+
+        //document.querySelector('.chat-list li:hover').style.backgroundColor = '#e0e0e0';
+        document.styleSheets[0].insertRule(
+            '.chat-list li { color: #ffffff }',
+            document.styleSheets[0].cssRules.length
+        );
+        document.styleSheets[0].insertRule(
+            '.chat-list li:hover { background-color: #000000 !important; }',
+            document.styleSheets[0].cssRules.length
+        );
 
         //document.querySelector('.expand-section button:hover').style.backgroundColor = '#0056b3';
         document.styleSheets[0].insertRule(
@@ -592,8 +643,16 @@ function noir() {
             document.styleSheets[0].cssRules.length
         );
 
-        document.querySelector('.input-container').style.borderTop = '1px solid #ccc';
-        document.querySelector('.input-container').style.backgroundColor = '#f9f9f9';
+        document.querySelector('.input-container').style.borderTop = '1px solid #303236';
+        document.querySelector('.input-container').style.backgroundColor = '#303236';
+
+        document.querySelector('.input-container input').style.backgroundColor = '#6b6d70';
+
+        document.styleSheets[0].insertRule(
+            '.input-container input::placeholder { color: #ffffff; }', // Change to the desired color
+            document.styleSheets[0].cssRules.length
+        );
+        document.querySelector('.input-container input').style.color = '#ffffff';
 
         document.querySelector('.input-container button').style.backgroundColor = '#007bff';
         document.querySelector('.input-container button').style.color = 'white';
@@ -604,17 +663,48 @@ function noir() {
             document.styleSheets[0].cssRules.length
         );
 
-        document.querySelector('.add-chat-container').style.borderTop = '1px solid #ccc';
-        document.querySelector('.add-chat-container').style.backgroundColor = '#f9f9f9';
+        document.querySelector('.add-chat-container').style.borderTop = '1px solid #000';
+        document.querySelector('.add-chat-container').style.backgroundColor = '#2d2f31';
 
         document.querySelector('.add-chat-container button').style.backgroundColor = '#28a745';
         document.querySelector('.add-chat-container button').style.color = 'white';
+        document.querySelector('.add-chat-container input').style.backgroundColor = '#6b6d70';
+
+        document.styleSheets[0].insertRule(
+            '.add-chat-container input::placeholder { color: #ffffff; }', // Change to the desired color
+            document.styleSheets[0].cssRules.length
+        );
+        document.querySelector('.add-chat-container input').style.color = '#ffffff';
 
         //document.querySelector('.add-chat-container button:hover').style.backgroundColor = '#218838';
         document.styleSheets[0].insertRule(
             '.add-chat-container button:hover { background-color: #218838 !important; }',
             document.styleSheets[0].cssRules.length
         );
+
+        // non-existent stuff to not throw issues
+
+        //document.querySelector('.chat-window').style.backgroundColor = '#ffffff';
+        document.querySelector('.chat-container').style.background = '#474747';
+        // Select all elements with the 'message' class
+        const messages = document.querySelectorAll('.message');
+
+        // Loop through each element and apply the color style
+        messages.forEach(message => {
+            message.style.color = '#ffffff';
+        });
+        //const chatWindow = document.querySelector('.chat-window');
+        //if (chatWindow) {
+        //    chatWindow.style.backgroundColor = '#ffffff';  // Change background color
+        //} else {
+        //    console.log('Element .chat-window not loaded yet. Select a chat to apply');
+        //}
+
+        document.querySelector('.expand-section').style.border = '1px solid #ccc';
+        document.querySelector('.expand-section').style.backgroundColor = '#f9f9f9';
+
+        document.querySelector('.expand-section button').style.backgroundColor = '#007bff';
+        document.querySelector('.expand-section button').style.color = 'white';
     }
 </script>
 </body>
