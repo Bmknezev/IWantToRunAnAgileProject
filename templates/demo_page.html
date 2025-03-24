@@ -38,6 +38,7 @@
             cursor: pointer;
             text-align: center;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .settings-section button:hover {
@@ -48,6 +49,7 @@
             text-align: center;
             color: #555;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .show {
@@ -59,6 +61,7 @@
             font-family: Arial, sans-serif;
             display: flex;
             height: 100vh;
+            font-size: 14px;
         }
 
         .sidebar {
@@ -89,6 +92,7 @@
             border-bottom: 1px solid #ccc;
             cursor: pointer;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .chat-list li:hover {
@@ -107,6 +111,7 @@
             margin: 10px 0;
             color: #000000;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .expand-section {
@@ -127,6 +132,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .expand-section button:hover {
@@ -147,6 +153,7 @@
             border-radius: 5px;
             margin-right: 10px;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .input-container button {
@@ -157,6 +164,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .input-container button:hover {
@@ -176,6 +184,7 @@
             border-radius: 5px;
             margin-right: 10px;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .add-chat-container button {
@@ -186,6 +195,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-family: inherit;
+            font-size: inherit;
         }
 
         .add-chat-container button:hover {
@@ -254,6 +264,7 @@
         <label for="javascript" >Hackerman</label><br>
 
     </form>
+    <br>
     <p id="fonts-modify" style="color: inherit;">Font</p>
     <form action="/action_page.php">
 
@@ -265,6 +276,21 @@
 
         <input type="radio" id="hackerlol" name="fav_language" value="hackerlol" onclick="terminalMode()">
         <label for="hackerlol" style="font-family: 'Courier New', monospace;">Terminal</label><br>
+
+    </form>
+
+    <br>
+    <p id="size-modify" style="color: inherit;">Font Size</p>
+    <form action="/action_page.php">
+
+        <input type="radio" id="smallsize" name="fav_language" value="arially" onclick="textSizeSmall()">
+        <label for="smallsize" >Small (14px)</label><br>
+
+        <input type="radio" id="medsize" name="fav_language" value="verdun" onclick="textSizeMed()">
+        <label for="medsize" >Medium (20px)</label><br>
+
+        <input type="radio" id="largesize" name="fav_language" value="hackerlol" onclick="textSizeLarge()">
+        <label for="largesize">Large (22px)</label><br>
 
     </form>
 </div>
@@ -852,6 +878,7 @@ function hackerman() {
 
         document.querySelector('.expand-section button').style.backgroundColor = '#007bff';
         document.querySelector('.expand-section button').style.color = 'white';
+
     }
 
 function arialMode() {
@@ -873,6 +900,37 @@ function terminalMode() {
             'body { font-family: \'Courier New\', monospace; }',
             document.styleSheets[0].cssRules.length
         );
+}
+
+function textSizeSmall() {
+    document.styleSheets[0].insertRule(
+            'body { font-size: 14px; }',
+            document.styleSheets[0].cssRules.length
+    );
+    document.styleSheets[0].insertRule(
+            '.settings-section h2 { font-size: 20px; }',
+            document.styleSheets[0].cssRules.length
+    );
+}
+function textSizeMed() {
+    document.styleSheets[0].insertRule(
+            'body { font-size: 18px; }',
+            document.styleSheets[0].cssRules.length
+    );
+    document.styleSheets[0].insertRule(
+            '.settings-section h2 { font-size: 24px; }',
+            document.styleSheets[0].cssRules.length
+    );
+}
+function textSizeLarge() {
+    document.styleSheets[0].insertRule(
+            'body { font-size: 22px; }',
+            document.styleSheets[0].cssRules.length
+    );
+    document.styleSheets[0].insertRule(
+            '.settings-section h2 { font-size: 28px; }',
+            document.styleSheets[0].cssRules.length
+    );
 }
 </script>
 </body>
