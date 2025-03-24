@@ -496,6 +496,12 @@ function showNotification() {
 // stylize the page
 function lightMode() {
         chatColor = 0;
+
+        document.styleSheets[0].insertRule(
+            'body { font-family: Arial, sans-serif; }',
+            document.styleSheets[0].cssRules.length
+        );
+
         document.querySelector('.settings-section').style.backgroundColor = '#beebfa';
         document.querySelector('.settings-section').style.color = '#333';
         document.querySelector('.settings-section').style.borderTop = '1px solid #ccc';
@@ -605,6 +611,12 @@ function lightMode() {
     }
 function noir() {
         chatColor = 1;
+
+        document.styleSheets[0].insertRule(
+            'body { font-family: Arial, sans-serif; }',
+            document.styleSheets[0].cssRules.length
+        );
+
         document.querySelector('.settings-section').style.backgroundColor = '#2d2d30';
         document.querySelector('.settings-section').style.color = '#ffffff';
         document.querySelector('.settings-section').style.borderTop = '1px solid #2d2d30';
@@ -737,6 +749,10 @@ function hackerman() {
         //document.querySelector('.chat-list li:hover').style.backgroundColor = '#e0e0e0';
         document.styleSheets[0].insertRule(
             '.chat-list li { color: #149414 }',
+            document.styleSheets[0].cssRules.length
+        );
+        document.styleSheets[0].insertRule(
+            'body { font-family: \'Courier New\', monospace; }',
             document.styleSheets[0].cssRules.length
         );
         document.styleSheets[0].insertRule(
