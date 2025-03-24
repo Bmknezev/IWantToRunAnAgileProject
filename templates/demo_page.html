@@ -240,6 +240,8 @@
     <button onclick="alert('Option 2 selected!')">Option 2</button>
     <button onclick="alert('Option 3 selected!')">Option 3</button>
     <p id="customizeChatHereP">Customize your chat experience here!</p>
+    <br>
+    <p id="themes">Themes</p>
     <form action="/action_page.php">
 
         <input type="radio" id="html" name="fav_language" value="lightmode" onclick="lightMode()">
@@ -249,7 +251,20 @@
         <label for="css">Noir Mode</label><br>
 
         <input type="radio" id="javascript" name="fav_language" value="hackerman" onclick="hackerman()">
-        <label for="javascript">Hackerman</label><br>
+        <label for="javascript" >Hackerman</label><br>
+
+    </form>
+    <p id="fonts-modify">Font</p>
+    <form action="/action_page.php">
+
+        <input type="radio" id="arially" name="fav_language" value="arially" onclick="arialMode()">
+        <label for="arially" style="font-family: Arial, sans-serif;">Arial</label><br>
+
+        <input type="radio" id="verdun" name="fav_language" value="verdun" onclick="verdunMode()">
+        <label for="verdun" style="font-family: Verdana, sans-serif;">Verdana</label><br>
+
+        <input type="radio" id="hackerlol" name="fav_language" value="hackerlol" onclick="terminalMode()">
+        <label for="hackerlol" style="font-family: 'Courier New', monospace;">Terminal</label><br>
 
     </form>
 </div>
@@ -507,10 +522,10 @@ function showNotification() {
 function lightMode() {
         chatColor = 0;
 
-        document.styleSheets[0].insertRule(
-            'body { font-family: Arial, sans-serif; }',
-            document.styleSheets[0].cssRules.length
-        );
+        //document.styleSheets[0].insertRule(
+            //'body { font-family: Arial, sans-serif; }',
+            //document.styleSheets[0].cssRules.length
+        //);
 
         document.querySelector('.settings-section').style.backgroundColor = '#beebfa';
         document.querySelector('.settings-section').style.color = '#333';
@@ -622,10 +637,10 @@ function lightMode() {
 function noir() {
         chatColor = 1;
 
-        document.styleSheets[0].insertRule(
-            'body { font-family: Arial, sans-serif; }',
-            document.styleSheets[0].cssRules.length
-        );
+        //document.styleSheets[0].insertRule(
+           // 'body { font-family: Arial, sans-serif; }',
+           // document.styleSheets[0].cssRules.length
+        //);
 
         document.querySelector('.settings-section').style.backgroundColor = '#2d2d30';
         document.querySelector('.settings-section').style.color = '#ffffff';
@@ -760,10 +775,10 @@ function hackerman() {
             '.chat-list li { color: #149414 }',
             document.styleSheets[0].cssRules.length
         );
-        document.styleSheets[0].insertRule(
-            'body { font-family: \'Courier New\', monospace; }',
-            document.styleSheets[0].cssRules.length
-        );
+        //document.styleSheets[0].insertRule(
+           // 'body { font-family: \'Courier New\', monospace; }',
+           // document.styleSheets[0].cssRules.length
+        //);
         document.styleSheets[0].insertRule(
             '.chat-list li:hover { background-color: #0c3605 !important; }',
             document.styleSheets[0].cssRules.length
@@ -838,6 +853,27 @@ function hackerman() {
         document.querySelector('.expand-section button').style.backgroundColor = '#007bff';
         document.querySelector('.expand-section button').style.color = 'white';
     }
+
+function arialMode() {
+    document.styleSheets[0].insertRule(
+            'body { font-family: Arial, monospace; }',
+            document.styleSheets[0].cssRules.length
+    );
+}
+
+function verdunMode() {
+    document.styleSheets[0].insertRule(
+            'body { font-family: Verdana, monospace; }',
+            document.styleSheets[0].cssRules.length
+    );
+}
+
+function terminalMode() {
+    document.styleSheets[0].insertRule(
+            'body { font-family: \'Courier New\', monospace; }',
+            document.styleSheets[0].cssRules.length
+        );
+}
 </script>
 </body>
 </html>
