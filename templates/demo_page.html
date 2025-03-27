@@ -246,8 +246,7 @@
 <div class="settings-section">
     <h2>Settings</h2>
     <button id="enable" onclick="askNotificationPermission()">Enable notifications</button>
-    <button onclick="showNotification()">Notify me!</button>
-    <button onclick="alert('Option 2 selected!')">Option 2</button>
+    <button onclick="logout()">Logout</button>
     <button onclick="alert('Option 3 selected!')">Option 3</button>
     <p id="customizeChatHereP">Customize your chat experience here!</p>
     <br>
@@ -521,6 +520,10 @@ function joinRoom(roomId) {
     // Show the selected chat window
     document.getElementById(roomId).style.display = 'block';
 }
+function logout(){
+    socket.emit('logout')
+    window.location.replace("/");
+}
 function askNotificationPermission() {
   // Check if the browser supports notifications
   if (!("Notification" in window)) {
@@ -542,7 +545,7 @@ function showNotification() {
   // Check if the user has granted permission to show notifications
   if (Notification.permission === "granted") {
     // show a notification
-    new Notification("New Message");
+    new Notification("You have a new message");
   }
 }
 
@@ -934,6 +937,8 @@ function textSizeLarge() {
             document.styleSheets[0].cssRules.length
     );
 }
+
+
 </script>
 </body>
 </html>

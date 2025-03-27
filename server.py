@@ -33,6 +33,15 @@ def connect():
     print("connection made")
     emit('message', {'hello': "Hello"})
 
+@socketio.on('logout')
+def logout_handler():
+    print("logout called")
+    index = get_index_by_IP(request.remote_addr)
+    logged_in['FID'].pop(index)
+    logged_in['username'].pop(index)
+    logged_in['password'].pop(index)
+    logged_in['session'].pop(index)
+
 @socketio.on('login')
 def login_handler(username, password):
     print("login called")
