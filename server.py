@@ -83,7 +83,7 @@ def store_msg(room_ID, msg):
     print("FID: " + str(FID))
     print("sender FID: " + str(sender_FID))
 
-    if sender_FID in logged_in['FID']:
+    if FID in logged_in['FID']:
         isUpdated[FID]["isUpdated"] = 1
         isUpdated[FID]["fromWho"].append(setup_database.get_name_by_FID(get_FID_by_IP(request.remote_addr)))
         isUpdated[FID]["fromID"].append( get_FID_by_IP(request.remote_addr))

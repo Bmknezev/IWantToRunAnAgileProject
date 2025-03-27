@@ -81,7 +81,7 @@
     </style>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
     <script>
-	    var socket = io();
+        var socket = io();
         window.onbeforeunload = function () {
             socket.emit('client_disconnecting', "");
         }

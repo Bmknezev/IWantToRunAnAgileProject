@@ -296,10 +296,12 @@
 </div>
 
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
 <script>
     const socket = io();
     let activeChatId = null;
     const chatList = document.getElementById('chatList');
+    
 
     chatColor = 0;
     const observer = new MutationObserver(mutations => {
