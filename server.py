@@ -197,37 +197,46 @@ def test():
     print("here")
     return
 
-@socketio.on('send_image')
-def handle_image(data):
-    image_data = data['image']
+@socketio.on('send_media')
+def handle_media(data):
+    print("send_media event triggered")
+    print("Media type:", data['media_type'])
+    print("Room ID:", data['room_ID'])
+    print("Media data (first 100 chars):", data['media'][:100])
+
+
+    media_data = data['media']
+    media_type = data['media_type']
     room_ID = data['room_ID']
 
     FID = setup_database.get_FID_by_name(room_ID)
     sender_FID = get_FID_by_IP(request.remote_addr)
 
-    # Decode and save image
-    image_bytes = base64.b64decode(image_data.split(',')[1])
-    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}.png"
+    # Set file extension based on media type
+    ext = "mp4" if media_type == "video" else "png"
+    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}.{ext}"
     path = os.path.join("static", "uploads", filename)
     os.makedirs("static/uploads", exist_ok=True)
-    with open(path, 'wb') as f:
-        f.write(image_bytes)
 
-    image_url = f"/static/uploads/{filename}"
-    setup_database.insert_chat(FID, sender_FID, image_url, sender_FID)
+    with open(path, 'wb') as f:
+        try:
+            header, encoded = media_data.split(',', 1)
+            print("Header:", header)
+            print("Encoded length:", len(encoded))
+        except ValueError:
+            print("Invalid base64 media format")
+            return
+
+        with open(path, 'wb') as f:
+            f.write(base64.b64decode(encoded))
+            print(f"Saved video to: {path}")
+
+    media_url = f"/static/uploads/{filename}"
+    setup_database.insert_chat(FID, sender_FID, media_url, sender_FID)
 
     sender_name = setup_database.get_name_by_FID(str(sender_FID))
-    response = [sender_name, image_url, "image"]
-
-    # mark image as a new message for the recipient
-    if FID in logged_in['FID']:
-        isUpdated[FID]["isUpdated"] = 1
-        isUpdated[FID]["fromWho"].append(sender_name)
-        isUpdated[FID]["fromID"].append(sender_FID)
-        isUpdated[FID]["message"].append(image_url)  # image URL like a message
-
+    response = [sender_name, media_url, media_type]
     emit('receive_message', response, to=room_ID)
-
     return response
 
 
