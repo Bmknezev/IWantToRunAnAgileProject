@@ -328,14 +328,18 @@
 </div>
 
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 <script>
+    const socket = io();
+
+    var key = null
+    const SALT = 'salt'
+
     let attachedImage = null;  // base64 string
 
-    const socket = io();
     let activeChatId = null;
     const chatList = document.getElementById('chatList');
-    
+
 
     chatColor = 0;
     const observer = new MutationObserver(mutations => {
@@ -363,6 +367,22 @@
         if (Notification.permission === "granted") {
             enable.style.display = "block";
         }
+
+        var message = 'Hello There';
+        key = null;// ='AAAAAAAAAAAAAAAA'
+        socket.emit('show_FID', function(FID) {
+            key = FID + SALT + FID;
+        })
+        //while (key === null) {}
+        key = CryptoJS.enc.Utf8.parse(key);
+
+        //JS ENCRYPTION ECB
+        var encrypted = CryptoJS.AES.encrypt(message, key, {mode: CryptoJS.mode.ECB});
+        encrypted = encrypted.toString();
+        console.log('encrypted',encrypted );
+        var decrypted = CryptoJS.AES.decrypt(encrypted, key, {mode: CryptoJS.mode.ECB});
+        alert(encrypted);
+        alert(decrypted.toString(CryptoJS.enc.Utf8));
 
         socket.emit('connecting_need_friends', function(friend_list) {
             console.log('Received response: ', friend_list);
@@ -539,6 +559,7 @@
 
         const reader = new FileReader();
         reader.onload = function () {
+
             attachedImage = reader.result;
 
             //clear previous preview

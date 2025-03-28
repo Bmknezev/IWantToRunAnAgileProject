@@ -7,8 +7,11 @@ from flask_socketio import SocketIO, emit,send
 from pandas import DataFrame
 
 import setup_database
+import cryptomessages
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+SALT = 'salt'
 
 logged_in = {
     'FID': [],
@@ -31,6 +34,17 @@ def get_FID_by_IP(ip):
 # need more info? get the specific index you need from the logger
 def get_index_by_IP(ip):
     return logged_in['session'].index(ip)
+
+def create_key_with_IP(ip):
+    fid = get_FID_by_IP(ip)
+    key = fid + SALT + fid
+    print(key)
+    return key
+
+def create_key_with_FID(FID):
+    key = FID + SALT + FID
+    print(key)
+    return key
 
 @socketio.on('connect')
 def connect():
