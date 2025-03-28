@@ -17,7 +17,7 @@ isUpdated = {
 
 }
 
-# now you can access the FID based on the IP address of someboy
+# now you can access the FID based on the IP address of somebody
 # get_FID_by_IP(request.remote_addr) # this is the fastest way to use it in any socketio function
 def get_FID_by_IP(ip):
     loc_in_logged = logged_in['session'].index(ip)
@@ -32,6 +32,22 @@ def get_index_by_IP(ip):
 def connect():
     print("connection made")
     emit('message', {'hello': "Hello"})
+
+@socketio.on('new_account')
+def new_account(username, password):
+    print("new account")
+    setup_database.create_user(username, password)
+
+    FID = setup_database.find_user(username, password)
+
+    logged_in['FID'].append(FID)
+    logged_in['username'].append(username)
+    logged_in['password'].append(password)
+    logged_in['session'].append(request.remote_addr)
+
+    isUpdated[FID] = {"isUpdated": 0, "fromWho": "", "fromID": "", "message": ""}
+
+    return f"account made \n Username: {username} \n Password: {password}"
 
 @socketio.on('logout')
 def logout_handler():

@@ -94,6 +94,13 @@
             socket.emit("login", username, password);
         }
 
+        function handleRegister() {
+            username = document.getElementById('username').value;
+            password = document.getElementById('password').value;
+            socket.emit("new_account", username, password);
+            window.location.replace(window.location.href + "/chat");
+        }
+
         socket.on('login_success', function(data) {
             // Redirect the browser to the URL sent by the server
             window.location.replace(window.location.href + "/chat");
@@ -121,9 +128,12 @@
             <button href="/chat" type="submit" class="login-btn">Login</button>
             <p id="demo"></p>
         </form>
-        <div class="footer-text">
+        <!--<div class="footer-text">
             Don't have an account? <a href="#">Sign up</a>
         </div>
+        -->
+        <br>
+        <button type="submit" class="login-btn" onclick="handleRegister()">Register Account</button>
     </div>
 </body>
 </html>
