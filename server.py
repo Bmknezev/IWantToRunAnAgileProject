@@ -177,6 +177,12 @@ def add_friend_to_list(FID_to_add):
     else:
         return -1
 
+@socketio.on('show_FID')
+def show_FID():
+    fid = get_FID_by_IP(request.remote_addr)
+    print(fid)
+    return fid
+
 @socketio.on('notification')
 def notify_user(msg):
     print("notification: " + msg)

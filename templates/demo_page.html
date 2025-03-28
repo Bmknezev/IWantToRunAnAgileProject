@@ -247,7 +247,7 @@
     <h2>Settings</h2>
     <button id="enable" onclick="askNotificationPermission()">Enable notifications</button>
     <button onclick="logout()">Logout</button>
-    <button onclick="alert('Option 3 selected!')">Option 3</button>
+    <button onclick="showFriendID()">Display Your Friend ID</button>
     <p id="customizeChatHereP">Customize your chat experience here!</p>
     <br>
     <p id="themes" style="color: inherit;">Themes</p>
@@ -547,6 +547,13 @@ function showNotification() {
     // show a notification
     new Notification("You have a new message");
   }
+}
+
+
+function showFriendID() {
+    socket.emit("show_FID", function(FID) {
+        alert("Your Friend Code is " + FID);
+    })
 }
 
 // stylize the page
