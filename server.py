@@ -24,6 +24,8 @@ isUpdated = {
 
 }
 
+key = 'AAAAAAAAAAAAAAAA'
+
 # now you can access the FID based on the IP address of somebody
 # get_FID_by_IP(request.remote_addr) # this is the fastest way to use it in any socketio function
 def get_FID_by_IP(ip):
@@ -35,16 +37,26 @@ def get_FID_by_IP(ip):
 def get_index_by_IP(ip):
     return logged_in['session'].index(ip)
 
-def create_key_with_IP(ip):
-    fid = get_FID_by_IP(ip)
-    key = fid + SALT + fid
-    print(key)
-    return key
 
-def create_key_with_FID(FID):
-    key = FID + SALT + FID
-    print(key)
-    return key
+#def create_key_with_IP(ip):
+ #   fid = get_FID_by_IP(ip)
+  #  key = fid + SALT + fid
+   # print(key)
+    #return key
+
+#def create_key_with_FID(FID):
+ #   key = FID + SALT + FID
+  #  print(key)
+   # return key
+
+@socketio.on('test_crypto')
+def test_crypto(msg):
+    print("encrypted: ", msg)
+    key = 'AAAAAAAAAAAAAAAA'
+    decrypted = cryptomessages.decrypt(msg, key)
+    print("decrypted: ", decrypted)
+    encrypted = cryptomessages.encrypt(str(decrypted), key)
+    return encrypted
 
 @socketio.on('connect')
 def connect():
@@ -121,6 +133,9 @@ def store_msg(room_ID, msg):
     FID = setup_database.get_FID_by_name(room_ID)
     sender_FID = get_FID_by_IP(request.remote_addr)
 
+    temp = msg
+    msg = cryptomessages.decrypt(msg, key)#.decode('utf-8')
+
     print("msg recieved: " + str(msg) )
     print("room ID: " + str(room_ID))
     print("FID: " + str(FID))
@@ -135,6 +150,7 @@ def store_msg(room_ID, msg):
     sender_name = setup_database.get_name_by_FID(str(sender_FID))
     print("sender name: " + str(sender_name))
     setup_database.insert_chat(FID, sender_FID, msg, sender_FID)
+    msg = cryptomessages.encrypt(msg, key).decode("utf-8", "ignore")
     response = [sender_name, msg]
     emit('receive_message', response, to=sender_name)
 
@@ -147,6 +163,8 @@ def refresh():
     name = isUpdated[get_FID_by_IP(request.remote_addr)]["fromWho"]
     id = isUpdated[get_FID_by_IP(request.remote_addr)]["fromID"]
     message = isUpdated[get_FID_by_IP(request.remote_addr)]["message"]
+    for i in range(len(message)):
+        message[i] = cryptomessages.encrypt(message[i], key).decode("utf-8", "ignore")
 
     isUpdated[get_FID_by_IP(request.remote_addr)]["isUpdated"] = 0
     isUpdated[get_FID_by_IP(request.remote_addr)]["fromWho"] = []
@@ -165,7 +183,8 @@ def give_msgs(room_ID):
         print(chats[c])
         chats_new[c][0] = setup_database.get_name_by_FID(chats[c][0])
         chats_new[c][1] = setup_database.get_name_by_FID(chats[c][1])
-        chats_new[c][2] = chats[c][2]
+        #chats_new[c][2] = chats[c][2]
+        chats_new[c][2] = cryptomessages.encrypt(chats[c][2], key).decode("utf-8", "ignore")
         chats_new[c][3] = chats[c][3]
         chats_new[c][4] = setup_database.get_name_by_FID(chats[c][4])
         print(chats_new[c])
