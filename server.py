@@ -1,3 +1,7 @@
+import base64
+import os
+from datetime import datetime
+
 from flask import Flask, render_template, request, redirect, url_for
 from flask_socketio import SocketIO, emit,send
 from pandas import DataFrame
@@ -187,6 +191,38 @@ def test():
     print("here")
     return
 
+@socketio.on('send_image')
+def handle_image(data):
+    image_data = data['image']
+    room_ID = data['room_ID']
+
+    FID = setup_database.get_FID_by_name(room_ID)
+    sender_FID = get_FID_by_IP(request.remote_addr)
+
+    # Decode and save image
+    image_bytes = base64.b64decode(image_data.split(',')[1])
+    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}.png"
+    path = os.path.join("static", "uploads", filename)
+    os.makedirs("static/uploads", exist_ok=True)
+    with open(path, 'wb') as f:
+        f.write(image_bytes)
+
+    image_url = f"/static/uploads/{filename}"
+    setup_database.insert_chat(FID, sender_FID, image_url, sender_FID)
+
+    sender_name = setup_database.get_name_by_FID(str(sender_FID))
+    response = [sender_name, image_url, "image"]
+
+    # mark image as a new message for the recipient
+    if FID in logged_in['FID']:
+        isUpdated[FID]["isUpdated"] = 1
+        isUpdated[FID]["fromWho"].append(sender_name)
+        isUpdated[FID]["fromID"].append(sender_FID)
+        isUpdated[FID]["message"].append(image_url)  # image URL like a message
+
+    emit('receive_message', response, to=room_ID)
+
+    return response
 
 
 

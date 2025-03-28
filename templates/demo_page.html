@@ -201,6 +201,37 @@
         .add-chat-container button:hover {
             background-color: #218838;
         }
+
+        .image-preview-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .image-preview-wrapper img {
+            max-height: 50px;
+            border-radius: 4px;
+            display: block;
+        }
+
+        .image-preview-wrapper .remove-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 14px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        #imagePreview {
+            padding: 10px;
+            min-height: 60px;
+        }
+
     </style>
 </head>
 <body>
@@ -238,6 +269,8 @@
     -->
     <div class="input-container">
         <input type="text" id="messageInput" placeholder="Type your message here...">
+        <div id="imagePreview" style="margin-left: 10px;"></div>
+        <input type="file" id="imageInput" accept="image/*">
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
@@ -297,6 +330,8 @@
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 
 <script>
+    let attachedImage = null;  // base64 string
+
     const socket = io();
     let activeChatId = null;
     const chatList = document.getElementById('chatList');
@@ -362,7 +397,21 @@
         const chatWindow = document.getElementById(activeChatId);
         const newMessage = document.createElement('div');
         newMessage.classList.add('message');
-        newMessage.textContent = `${data.username}: ${data.message}`;
+        if (data.length === 3 && data[2] === "image") {
+            const senderLabel = document.createElement('div');
+            senderLabel.textContent = `${data[0]}:`;
+
+            const img = document.createElement('img');
+            img.src = data[1];
+            img.style.maxWidth = '200px';
+            img.style.borderRadius = '8px';
+
+
+            newMessage.appendChild(senderLabel);
+            newMessage.appendChild(img);
+        } else {
+            newMessage.textContent = `${data.username}: ${data.message}`;
+        }
         chatWindow.appendChild(newMessage);
         chatWindow.scrollTop = chatWindow.scrollHeight;  // Scroll to the bottom
         socket.emit('test')
@@ -389,7 +438,23 @@
                     const chatWindow = document.getElementById(activeChatId);
                     const newMessage = document.createElement('div');
                     newMessage.classList.add('message');
-                    newMessage.textContent = `${name[isInChat]}: ${message[isInChat]}`;
+                    const content = message[isInChat];
+                    const sender = name[isInChat];
+
+                    if (typeof content === 'string' && content.startsWith('/static/uploads/')) {
+                        const senderLabel = document.createElement('div');
+                        senderLabel.textContent = `${sender}:`;
+                        newMessage.appendChild(senderLabel);
+
+
+                        const img = document.createElement('img');
+                        img.src = content;
+                        img.style.maxWidth = '200px';
+                        img.style.borderRadius = '8px';
+                        newMessage.appendChild(img);
+                    } else {
+                        newMessage.textContent = `${name[isInChat]}: ${message[isInChat]}`;
+                    }
                     chatWindow.appendChild(newMessage);
                     chatWindow.scrollTop = chatWindow.scrollHeight;
                 }
@@ -422,21 +487,102 @@
     function sendMessage() {
         const messageInput = document.getElementById('messageInput');
         const messageText = messageInput.value.trim();
-        if (messageText && activeChatId) {
-            //socket.emit('send_message', { username: 'User', message: messageText, room: activeChatId });
+        const chatWindow = document.getElementById(activeChatId);
+
+        // Do nothing if no message and no image
+        if (!messageText && !attachedImage) return;
+
+        if (messageText) {
             socket.emit('send_message', activeChatId, messageText, function(response) {
-                console.log("Response: ", response)
-                const chatWindow = document.getElementById(activeChatId);
                 const newMessage = document.createElement('div');
                 newMessage.classList.add('message');
                 newMessage.textContent = `${response[0]}: ${response[1]}`;
                 chatWindow.appendChild(newMessage);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-            })
-            messageInput.value = '';  // Clear input
-        console.log(currentRoomId)
+            });
         }
-    }
+
+        if (attachedImage) {
+            socket.emit('send_image', {
+                image: attachedImage,
+                room_ID: activeChatId
+            }, function(response) {
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message');
+
+                const senderLabel = document.createElement('div');
+                senderLabel.textContent = `${response[0]}:`;
+
+                const img = document.createElement('img');
+                img.src = response[1];
+                img.style.maxWidth = '200px';
+                img.style.borderRadius = '8px';
+
+                newMessage.appendChild(senderLabel);
+                newMessage.appendChild(img);
+                chatWindow.appendChild(newMessage);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            });
+
+            // Clear attachment
+            attachedImage = null;
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('imageInput').value = '';
+        }
+            messageInput.value = '';
+        }
+
+
+    document.getElementById('imageInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function () {
+            attachedImage = reader.result;
+
+            //clear previous preview
+            document.getElementById('imagePreview').innerHTML = '';
+
+            // Show preview
+            const previewContainer = document.createElement('div');
+            previewContainer.style.position = 'relative';
+            previewContainer.style.display = 'inline-block';
+            previewContainer.style.marginLeft = '10px';
+
+            const img = document.createElement('img');
+            img.src = attachedImage;
+            img.style.maxHeight = '50px';
+            img.style.borderRadius = '4px';
+            img.style.display = 'block';
+
+            // "X" button
+            const closeBtn = document.createElement('span');
+            closeBtn.textContent = '×';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '0px';
+            closeBtn.style.right = '0px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.background = 'rgba(0,0,0,0.6)';
+            closeBtn.style.color = 'white';
+            closeBtn.style.borderRadius = '50%';
+            closeBtn.style.padding = '2px 6px';
+            closeBtn.style.fontSize = '14px';
+            closeBtn.style.lineHeight = '1';
+
+            closeBtn.onclick = function () {
+                attachedImage = null;
+                document.getElementById('imagePreview').innerHTML = '';
+                document.getElementById('imageInput').value = '';
+            };
+
+            previewContainer.appendChild(img);
+            previewContainer.appendChild(closeBtn);
+            document.getElementById('imagePreview').appendChild(previewContainer);
+        };
+
+        reader.readAsDataURL(file);
+    });
 
     // Add a new chat room (channel)
     function addChat() {
@@ -502,13 +648,29 @@ function joinRoom(roomId) {
             chatWindow.removeChild(chatWindow.firstChild);
         }
 
-        for(i = 0; i < chats.length; i++) {
-            console.log("chat thingies: ", chats[i])
-
+         for (let i = 0; i < chats.length; i++) {
             const newMessage = document.createElement('div');
-
             newMessage.classList.add('message');
-            newMessage.textContent = `${chats[i][4]}: ${chats[i][2]}`;
+
+            const content = chats[i][2];
+            const sender = chats[i][4];
+
+            // Check if it's an image URL
+            if (content.startsWith('/static/uploads/')) {
+                const senderLabel = document.createElement('div');
+                senderLabel.textContent = `${sender}:`;
+
+                const img = document.createElement('img');
+                img.src = content;
+                img.style.maxWidth = '200px';
+                img.style.borderRadius = '8px';
+
+                newMessage.appendChild(senderLabel);
+                newMessage.appendChild(img);
+            } else {
+                newMessage.textContent = `${sender}: ${content}`;
+            }
+
             chatWindow.appendChild(newMessage);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
