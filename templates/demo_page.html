@@ -332,8 +332,8 @@
 <script>
     const socket = io();
 
-    var key = null
-    const SALT = 'salt'
+
+    //const SALT = 'salt'
 
     let attachedImage = null;  // base64 string
 
@@ -370,19 +370,28 @@
 
         var message = 'Hello There';
         key = null;// ='AAAAAAAAAAAAAAAA'
-        socket.emit('show_FID', function(FID) {
-            key = FID + SALT + FID;
-        })
-        //while (key === null) {}
-        key = CryptoJS.enc.Utf8.parse(key);
+        //socket.emit('show_FID', function(FID) {
+            //key = FID.concat(SALT, FID);
+            //while (key === null) {}
+            //key = CryptoJS.enc.Utf8.parse(key);
+            //alert("hi there");
+            //alert(key);
+            //JS ENCRYPTION ECB
+            //var encrypted = CryptoJS.AES.encrypt(message, key, {mode: CryptoJS.mode.ECB});
+            //encrypted = encrypted.toString();
+            //console.log('encrypted',encrypted );
+            //var decrypted = CryptoJS.AES.decrypt(encrypted, key, {mode: CryptoJS.mode.ECB});
+            //alert(encrypted);
+            //alert(decrypted.toString(CryptoJS.enc.Utf8));
 
-        //JS ENCRYPTION ECB
-        var encrypted = CryptoJS.AES.encrypt(message, key, {mode: CryptoJS.mode.ECB});
-        encrypted = encrypted.toString();
-        console.log('encrypted',encrypted );
-        var decrypted = CryptoJS.AES.decrypt(encrypted, key, {mode: CryptoJS.mode.ECB});
-        alert(encrypted);
-        alert(decrypted.toString(CryptoJS.enc.Utf8));
+            //socket.emit('test_crypto', encrypted, function(msg) {
+                //d = CryptoJS.AES.decrypt(msg, key, {mode: CryptoJS.mode.ECB});
+                //alert(decrypted.toString(CryptoJS.enc.Utf8));
+               // console.log(decrypted.toString(CryptoJS.enc.Utf8))
+            //})
+        //})
+
+
 
         socket.emit('connecting_need_friends', function(friend_list) {
             console.log('Received response: ', friend_list);
@@ -446,6 +455,9 @@
             }
             console.log("name: ", name);
             console.log("id: ", id);
+            for(i = 0; i < message.length; i++) {
+                message[i] = decryptStuff(message[i]);
+            }
             console.log("message: ", message)
             console.log("current chat id: ", activeChatId)
             console.log("is this the current chat? ", activeChatId === name);
@@ -512,10 +524,15 @@
         // Do nothing if no message and no image
         if (!messageText && !attachedImage) return;
 
+        var messageEnc;
         if (messageText) {
-            socket.emit('send_message', activeChatId, messageText, function(response) {
+            //var key = 'AAAAAAAAAAAAAAAA'
+            //key = CryptoJS.enc.Utf8.parse(key);
+            messageEnc = encryptStuff(messageText);
+            socket.emit('send_message', activeChatId, messageEnc, function (response) {
                 const newMessage = document.createElement('div');
                 newMessage.classList.add('message');
+                response[1] = decryptStuff(response[1]);
                 newMessage.textContent = `${response[0]}: ${response[1]}`;
                 chatWindow.appendChild(newMessage);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -673,7 +690,7 @@ function joinRoom(roomId) {
             const newMessage = document.createElement('div');
             newMessage.classList.add('message');
 
-            const content = chats[i][2];
+            const content = decryptStuff(chats[i][2]);
             const sender = chats[i][4];
 
             // Check if it's an image URL
@@ -707,6 +724,21 @@ function logout(){
     socket.emit('logout')
     window.location.replace("/");
 }
+
+function encryptStuff(messageText) {
+    var key = 'AAAAAAAAAAAAAAAA'
+    key = CryptoJS.enc.Utf8.parse(key);
+    var messageEnc = CryptoJS.AES.encrypt(messageText, key, {mode: CryptoJS.mode.ECB}).toString();
+    return messageEnc
+}
+
+function decryptStuff(messageText) {
+    var key = 'AAAAAAAAAAAAAAAA'
+    key = CryptoJS.enc.Utf8.parse(key);
+    var messageEnc = CryptoJS.AES.decrypt(messageText, key, {mode: CryptoJS.mode.ECB});
+    return messageEnc.toString(CryptoJS.enc.Utf8);
+}
+
 function askNotificationPermission() {
   // Check if the browser supports notifications
   if (!("Notification" in window)) {

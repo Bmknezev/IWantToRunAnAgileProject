@@ -12,7 +12,7 @@ def encrypt(raw, key):
 def decrypt(enc, key):
         enc = base64.b64decode(enc)
         cipher = AES.new(key.encode('utf-8'), AES.MODE_ECB)
-        return unpad(cipher.decrypt(enc),16)
+        return unpad(cipher.decrypt(enc),16).decode("utf-8", "ignore")
 
 
 key = 'AAAAAAAAAAAAAAAA' #Must Be 16 char for AES128
@@ -20,4 +20,4 @@ encrypted = encrypt("Hello There", key)
 print('encrypted ECB Base64:', encrypted.decode("utf-8", "ignore"))
 
 decrypted = decrypt(encrypted, key)
-print('data: ', decrypted.decode("utf-8", "ignore"))
+print('data: ', decrypted)
