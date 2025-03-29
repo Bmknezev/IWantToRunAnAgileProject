@@ -4,9 +4,13 @@ import sqlite3
 
 #con = sqlite3.connect("test.db")
 #cursor = con.cursor()
-#cursor.execute("CREATE TABLE User (username CHAR(200), password CHAR(200), id CHAR(30))")
-#cursor.execute("CREATE TABLE ChatHistory ( FID_1 CHAR(30), FID_2 CHAR(30), message CHAR(500), msgOrder INT, fromWho CHAR(30) )")
-#cursor.execute("CREATE TABLE Friends ( FID_1 CHAR(30), FID_2 CHAR(30) )")
+#cursor.execute("CREATE TABLE User (username CHAR(200), password CHAR(200), id CHAR(30)")
+#cursor.execute("CREATE TABLE ChatHistory (FID_1 CHAR(30), FID_2 CHAR(30), message CHAR(500), msgOrder INT, fromWho CHAR(30))")
+#cursor.execute("CREATE TABLE Friends ( FID_1 CHAR(30), FID_2 CHAR(30))")
+
+#cursor.execute("CREATE TABLE User (username CHAR(200) UNIQUE, password CHAR(200), id CHAR(30) PRIMARY KEY)")
+#cursor.execute("CREATE TABLE ChatHistory (FID_1 CHAR(30), FID_2 CHAR(30), message CHAR(500), msgOrder INT, fromWho CHAR(30), FOREIGN KEY (FID_1) REFERENCES User(id) ON DELETE CASCADE, FOREIGN KEY (FID_2) REFERENCES User(id) ON DELETE CASCADE)")`
+#cursor.execute("CREATE TABLE Friends ( FID_1 CHAR(30), FID_2 CHAR(30), FOREIGN KEY (FID_1) REFERENCES User(id) ON DELETE CASCADE, FOREIGN KEY (FID_2) REFERENCES User(id) ON DELETE CASCADE)")
 
 
 import string
@@ -185,8 +189,10 @@ def wipeout():
 
     sql_del = cursor.execute("DELETE FROM User")
     sql_del2 = cursor.execute("DELETE FROM ChatHistory")
+    sql_del3 = cursor.execute("DELETE FROM Friends")
     print("Total users affected: ", sql_del.rowcount)
     print("Total chats affected: ", sql_del2.rowcount)
+    print("Total friends affected: ", sql_del3.rowcount)
     con.commit()
 
 
